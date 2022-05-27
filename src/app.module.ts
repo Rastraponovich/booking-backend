@@ -19,6 +19,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: '1',
       database: 'booking',
       autoLoadEntities: true,
+      logging: true,
+
       synchronize: true,
     }),
     TablesModule,

@@ -1,11 +1,5 @@
-import { Role } from 'src/roles/entities/role.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-} from 'typeorm';
+import { Role } from '../../roles/entities/role.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {

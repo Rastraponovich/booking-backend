@@ -1,12 +1,5 @@
-import { Hallplane } from 'src/hallplanes/entities/hallplane.entity';
-import { User } from 'src/users/entities/user.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  ManyToOne,
-} from 'typeorm';
+import { Hallplane } from '../../hallplanes/entities/hallplane.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'tables' })
 export class Table {

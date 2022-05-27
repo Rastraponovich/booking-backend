@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TFindAndCountResult } from 'src/common/types';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateReserveDto } from './dto/create-reserve.dto';
 import { UpdateReserveDto } from './dto/update-reserve.dto';
+import { Reserve } from './entities/reserve.entity';
 
 @Injectable()
 export class ReservesService {
-  create(createReserveDto: CreateReserveDto) {
-    return 'This action adds a new reserve';
+  constructor(
+    @InjectRepository(Reserve)
+    private reservesRepository: Repository<Reserve>,
+  ) {}
+  async create(createReserveDto: CreateReserveDto): Promise<Reserve> {
+    return await this.reservesRepository.save(createReserveDto);
   }
 
-  findAll() {
-    return `This action returns all reserves`;
+  async findAll(): Promise<TFindAndCountResult<Reserve>> {
+    return await this.reservesRepository.findAndCount();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} reserve`;
+  async findOne(id: number): Promise<Reserve> {
+    return await this.reservesRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateReserveDto: UpdateReserveDto) {
-    return `This action updates a #${id} reserve`;
+  async update(
+    id: number,
+    updateReserveDto: UpdateReserveDto,
+  ): Promise<UpdateResult> {
+    return await this.reservesRepository.update(id, updateReserveDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} reserve`;
+  async remove(id: number): Promise<DeleteResult> {
+    return this.reservesRepository.delete(id);
   }
 }
