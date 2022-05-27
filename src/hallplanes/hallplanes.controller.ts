@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { HallplanesService } from './hallplanes.service';
 import { CreateHallplaneDto } from './dto/create-hallplane.dto';
 import { UpdateHallplaneDto } from './dto/update-hallplane.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Hallplanes')
 @Controller('hallplanes')
 export class HallplanesController {
   constructor(private readonly hallplanesService: HallplanesService) {}
@@ -23,7 +33,10 @@ export class HallplanesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateHallplaneDto: UpdateHallplaneDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateHallplaneDto: UpdateHallplaneDto,
+  ) {
     return this.hallplanesService.update(+id, updateHallplaneDto);
   }
 

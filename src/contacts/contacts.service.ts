@@ -1,26 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TFindAndCountResult } from 'src/common/types';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
+import { Contact } from './entities/contact.entity';
 
 @Injectable()
 export class ContactsService {
-  create(createContactDto: CreateContactDto) {
-    return 'This action adds a new contact';
+  constructor(
+    @InjectRepository(Contact)
+    private contactsRepository: Repository<Contact>,
+  ) {}
+  async create(createContactDto: CreateContactDto): Promise<Contact> {
+    return await this.contactsRepository.save(createContactDto);
   }
 
-  findAll() {
-    return `This action returns all contacts`;
+  async findAll(): Promise<TFindAndCountResult<Contact>> {
+    return await this.contactsRepository.findAndCount();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} contact`;
+  async findOne(id: number): Promise<Contact> {
+    return await this.contactsRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateContactDto: UpdateContactDto) {
-    return `This action updates a #${id} contact`;
+  async update(
+    id: number,
+    updateContactDto: UpdateContactDto,
+  ): Promise<UpdateResult> {
+    return await this.contactsRepository.update(id, updateContactDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} contact`;
+  async remove(id: number): Promise<DeleteResult> {
+    return await this.contactsRepository.delete(id);
   }
 }
