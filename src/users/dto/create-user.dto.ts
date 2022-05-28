@@ -10,7 +10,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: 'id роли пользователя',
-    required: true,
+    required: false,
     example: 1,
   })
   roleId: number;

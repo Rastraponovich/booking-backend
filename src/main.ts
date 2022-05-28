@@ -4,7 +4,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-
+import fastifyCookie from 'fastify-cookie';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -12,6 +12,10 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true }),
   );
+
+  await app.register(fastifyCookie, {
+    secret: 'my-secret', // for cookies signature
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Booking example')
