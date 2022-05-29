@@ -7,7 +7,6 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { Cookies } from './common/decorators';
@@ -24,8 +23,6 @@ export class AppController {
     @Cookies('refreshToken') refreshToken: string,
   ) {
     const tokens = await this.authService.login(user);
-
-    console.log(refreshToken);
 
     res.setCookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,

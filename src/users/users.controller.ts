@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,6 +23,7 @@ import {
   ApiOperation,
   ApiFoundResponse,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -42,6 +44,7 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'get all users' })
   @ApiFoundResponse({
     description: 'return all users and count it',

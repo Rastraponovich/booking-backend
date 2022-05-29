@@ -40,7 +40,7 @@ export class AuthService {
 
   private async generateAccessToken(user: User) {
     const payload = { email: user.email, id: user.id, roleId: user.roleId };
-    return this.jwtService.sign(payload, { expiresIn: '60s' });
+    return this.jwtService.sign(payload, { expiresIn: '15m' });
   }
 
   private async generateRefreshToken(user: User) {
