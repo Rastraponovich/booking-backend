@@ -9,22 +9,19 @@ import { ReservesModule } from './reserves/reserves.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { JwtService } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './database/database.module';
+import configuration from 'config/configuration';
+import databaseConfig from 'config/database.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: '10.20.3.2',
-      port: 5432,
-      username: 'admin',
-      password: '1',
-      database: 'booking',
-      autoLoadEntities: true,
-      logging: true,
-
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration, databaseConfig],
     }),
+    DatabaseModule,
+
     TablesModule,
     HallplanesModule,
     UsersModule,

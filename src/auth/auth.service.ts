@@ -9,11 +9,13 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/entities/user.entity';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async login(userDto: CreateUserDto) {
@@ -40,15 +42,24 @@ export class AuthService {
 
   private async generateAccessToken(user: User) {
     const payload = { email: user.email, id: user.id, roleId: user.roleId };
-    return this.jwtService.sign(payload, { expiresIn: '15m' });
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
   }
 
   private async generateRefreshToken(user: User) {
     const payload = { id: user.id };
-    return this.jwtService.sign(payload, { expiresIn: '30d' });
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
   }
   private async generateTokens(user: User) {
-    const payload = { email: user.email, id: user.id, roleId: user.roleId };
     const refreshToken = await this.generateRefreshToken(user);
     const accessToken = await this.generateAccessToken(user);
 
@@ -58,8 +69,12 @@ export class AuthService {
     };
   }
 
-  private async refreshToken(refreshToken: string) {
-    const token = this.jwtService.decode(refreshToken) as { id: number };
+  async refreshToken(refreshToken: string) {
+    console.log(refreshToken);
+
+    const token = this.jwtService.verify(refreshToken, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+    }) as { id: number };
 
     if (token) {
       const user = await this.usersService.findOne(Number(token.id));

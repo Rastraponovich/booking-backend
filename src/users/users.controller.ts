@@ -11,12 +11,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { TFindAndCountResult } from 'src/common/types';
 import {
   ApiBody,
   ApiTags,
-  ApiParam,
-  ApiResponse,
   ApiOkResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -26,6 +23,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('users')
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -44,7 +42,6 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ description: 'get all users' })
   @ApiFoundResponse({
     description: 'return all users and count it',

@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import {
   FastifyAdapter,
@@ -11,7 +12,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
+    { cors: true },
   );
+  const configService = app.get(ConfigService);
+  const port = configService.get('PORT');
 
   await app.register(fastifyCookie, {
     secret: 'my-secret', // for cookies signature
@@ -24,6 +28,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  await app.listen(4000, '0.0.0.0');
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();
