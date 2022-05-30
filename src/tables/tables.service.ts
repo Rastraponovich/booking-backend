@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TFindAndCountResult } from 'src/common/types';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { Table } from './entities/table.entity';
 
 @Injectable()
 export class TablesService {
-  create(createTableDto: CreateTableDto) {
-    return 'This action adds a new table';
+  constructor(
+    @InjectRepository(Table) private tablesRepository: Repository<Table>,
+  ) {}
+  async create(createTableDto: CreateTableDto): Promise<Table> {
+    return await this.tablesRepository.save(createTableDto);
   }
 
-  findAll() {
-    return `This action returns all tables`;
+  async findAll(id: number): Promise<TFindAndCountResult<Table>> {
+    return await this.tablesRepository.findAndCount({
+      where: { hallplaneId: id },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} table`;
+  async findOne(id: number): Promise<Table> {
+    return await this.tablesRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateTableDto: UpdateTableDto) {
-    return `This action updates a #${id} table`;
+  async update(
+    id: number,
+    updateTableDto: UpdateTableDto,
+  ): Promise<UpdateResult> {
+    return await this.tablesRepository.update(id, updateTableDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} table`;
+  async remove(id: number): Promise<DeleteResult> {
+    return await this.tablesRepository.delete(id);
   }
 }

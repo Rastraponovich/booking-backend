@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TablesService } from './tables.service';
 import { CreateTableDto } from './dto/create-table.dto';
@@ -40,8 +41,8 @@ export class TablesController {
   }
 
   @Get()
-  findAll() {
-    return this.tablesService.findAll();
+  findAll(@Query('id') id: string) {
+    return this.tablesService.findAll(+id);
   }
 
   @Get(':id')
