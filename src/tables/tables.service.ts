@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TFindAndCountResult } from 'src/common/types';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, Not, Repository, UpdateResult } from 'typeorm';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { Table } from './entities/table.entity';
@@ -16,8 +16,16 @@ export class TablesService {
   }
 
   async findAll(id: number): Promise<TFindAndCountResult<Table>> {
+    const condition = id !== 0 && { hallplaneId: id };
+
     return await this.tablesRepository.findAndCount({
-      where: { hallplaneId: id },
+      where: { ...condition },
+      relations: {
+        reserves: true,
+      },
+      order: {
+        id: 'ASC',
+      },
     });
   }
 

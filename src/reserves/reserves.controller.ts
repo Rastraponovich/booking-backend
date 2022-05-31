@@ -6,11 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  ParseBoolPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { ReservesService } from './reserves.service';
 import { CreateReserveDto } from './dto/create-reserve.dto';
 import { UpdateReserveDto } from './dto/update-reserve.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { TParams } from 'src/common/types';
 
 @ApiTags('Reserves')
 @Controller('reserves')
@@ -23,8 +27,11 @@ export class ReservesController {
   }
 
   @Get()
-  findAll() {
-    return this.reservesService.findAll();
+  findAll(
+    @Query('withDeleted', new DefaultValuePipe(false), ParseBoolPipe)
+    withDeleted: boolean,
+  ) {
+    return this.reservesService.findAll({ withDeleted });
   }
 
   @Get(':id')
@@ -40,5 +47,15 @@ export class ReservesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.reservesService.remove(+id);
+  }
+
+  @Post('/selected')
+  removeSeleteced(@Body() ids: Array<number>) {
+    return this.reservesService.removeSelected(ids);
+  }
+
+  @Delete('/all')
+  removeAll() {
+    return this.reservesService.removeAll();
   }
 }

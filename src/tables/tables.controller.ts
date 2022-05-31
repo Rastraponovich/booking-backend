@@ -41,7 +41,7 @@ export class TablesController {
   }
 
   @Get()
-  findAll(@Query('id') id: string) {
+  findAll(@Query('id') id: string | null = null) {
     return this.tablesService.findAll(+id);
   }
 

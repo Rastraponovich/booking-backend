@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TFindAndCountResult } from 'src/common/types';
+import { TFindAndCountResult, TParams } from 'src/common/types';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateReserveDto } from './dto/create-reserve.dto';
 import { UpdateReserveDto } from './dto/update-reserve.dto';
@@ -16,8 +16,15 @@ export class ReservesService {
     return await this.reservesRepository.save(createReserveDto);
   }
 
-  async findAll(): Promise<TFindAndCountResult<Reserve>> {
-    return await this.reservesRepository.findAndCount();
+  async findAll(params: TParams): Promise<TFindAndCountResult<Reserve>> {
+    const { withDeleted } = params;
+    return await this.reservesRepository.findAndCount({
+      relations: {
+        hallplane: true,
+        table: true,
+      },
+      withDeleted,
+    });
   }
 
   async findOne(id: number): Promise<Reserve> {
@@ -32,6 +39,21 @@ export class ReservesService {
   }
 
   async remove(id: number): Promise<DeleteResult> {
-    return this.reservesRepository.delete(id);
+    return this.reservesRepository.softDelete(id);
+  }
+
+  async removeSelected(ids: Array<number>): Promise<DeleteResult> {
+    return await this.reservesRepository.softDelete(ids);
+  }
+
+  async removeAll(): Promise<DeleteResult> {
+    const reserves = await this.reservesRepository.find({
+      where: { deletedAt: null },
+    });
+
+    const ids = reserves.map((r) => r.id);
+
+    if (ids.length) return await this.reservesRepository.softDelete(ids);
+    return;
   }
 }
