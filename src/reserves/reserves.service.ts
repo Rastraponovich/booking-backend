@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TFindAndCountResult, TParams } from 'src/common/types';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  Between,
+  DeleteResult,
+  MoreThanOrEqual,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { CreateReserveDto } from './dto/create-reserve.dto';
 import { UpdateReserveDto } from './dto/update-reserve.dto';
 import { Reserve } from './entities/reserve.entity';
+
+import { prepaysDict } from './../common/dict';
 
 @Injectable()
 export class ReservesService {
@@ -17,14 +25,53 @@ export class ReservesService {
   }
 
   async findAll(params: TParams): Promise<TFindAndCountResult<Reserve>> {
-    const { withDeleted } = params;
-    return await this.reservesRepository.findAndCount({
+    const { withDeleted, hallplaneId, prepayType } = params;
+
+    const condition = hallplaneId && { hallplaneId };
+
+    let prepay = null;
+
+    switch (prepayType) {
+      case 1:
+        prepay = prepaysDict[prepayType].value[0];
+        break;
+      case 2:
+        prepay = Between(
+          prepaysDict[prepayType].value[0],
+          prepaysDict[prepayType].value[1],
+        );
+
+        break;
+      case 3:
+        prepay = Between(
+          prepaysDict[prepayType].value[0],
+          prepaysDict[prepayType].value[1],
+        );
+        break;
+      case 4:
+        prepay = Between(
+          prepaysDict[prepayType].value[0],
+          prepaysDict[prepayType].value[1],
+        );
+        break;
+      case 5:
+        prepay = MoreThanOrEqual(prepaysDict[prepayType].value[0]);
+      default:
+        break;
+    }
+
+    const prepayCondition = prepay && { prepay };
+
+    const result = await this.reservesRepository.findAndCount({
       relations: {
         hallplane: true,
         table: true,
       },
       withDeleted,
+      where: { ...condition, ...prepayCondition },
     });
+
+    return result;
   }
 
   async findOne(id: number): Promise<Reserve> {

@@ -9,6 +9,9 @@ import {
   Query,
   ParseBoolPipe,
   DefaultValuePipe,
+  ParseIntPipe,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ReservesService } from './reserves.service';
 import { CreateReserveDto } from './dto/create-reserve.dto';
@@ -27,11 +30,29 @@ export class ReservesController {
   }
 
   @Get()
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      skipNullProperties: true,
+      skipMissingProperties: true,
+      skipUndefinedProperties: true,
+      enableDebugMessages: true,
+      disableErrorMessages: false,
+    }),
+  )
   findAll(
     @Query('withDeleted', new DefaultValuePipe(false), ParseBoolPipe)
     withDeleted: boolean,
+    @Query('hallplaneId')
+    hallplaneId?: string,
+    @Query('prepayType', new DefaultValuePipe(0), ParseIntPipe)
+    prepayType?: number,
   ) {
-    return this.reservesService.findAll({ withDeleted });
+    return this.reservesService.findAll({
+      withDeleted,
+      hallplaneId: Number(hallplaneId),
+      prepayType,
+    });
   }
 
   @Get(':id')
