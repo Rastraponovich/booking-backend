@@ -28,10 +28,10 @@ export class Reserve {
   @Column()
   prepay: number;
 
-  @Column()
-  startDate: string;
-  @Column()
-  endDate: string;
+  @Column({ nullable: true })
+  startDate: number;
+  @Column({ nullable: true })
+  endDate: number;
 
   @Column()
   hallplaneId: number;

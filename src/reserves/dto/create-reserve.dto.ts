@@ -1,6 +1,6 @@
 export class CreateReserveDto {
-  startDate: string;
-  endDate: string;
+  startDate: number;
+  endDate: number;
   hallId: number;
   tableId: number;
   prepay: number;
