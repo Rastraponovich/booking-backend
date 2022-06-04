@@ -28,9 +28,9 @@ export class Reserve {
   @Column()
   prepay: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'bigint' })
   startDate: number;
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'bigint' })
   endDate: number;
 
   @Column()
