@@ -4,6 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import fastifyCookie from 'fastify-cookie';
 import { AppModule } from './app.module';
@@ -14,6 +15,8 @@ async function bootstrap() {
     new FastifyAdapter({ logger: false }),
     { cors: true },
   );
+
+  app.useWebSocketAdapter(new WsAdapter(app));
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
 
