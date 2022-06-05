@@ -36,9 +36,10 @@ export class AuthController {
 
     res.setCookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
-      maxAge:
-        Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
-        1000,
+      maxAge: 1000 * 60 * 60 * 24 * 60,
+      // maxAge:
+      //   Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+      //   1000,
       path: '/',
     });
 
@@ -81,9 +82,9 @@ export class AuthController {
     const { refreshToken, accessToken } = req.user;
     res.setCookie('refreshToken', refreshToken, {
       httpOnly: true,
-      maxAge:
-        Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
-        1000,
+      maxAge: 1000 * 60 * 60 * 24 * 60,
+      // Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+      // 1000,
       path: '/',
     });
 
