@@ -79,6 +79,9 @@ export class AuthController {
     @Res({ passthrough: true }) res: any,
   ) {
     const { refreshToken, accessToken } = req.user;
+
+    console.log(req.user, 'req.user');
+
     res.setCookie('refreshToken', refreshToken, {
       httpOnly: true,
       maxAge:

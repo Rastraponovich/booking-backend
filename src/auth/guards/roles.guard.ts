@@ -15,7 +15,6 @@ export class RolesGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    console.log(roles);
 
     if (!roles) {
       return true;
@@ -26,8 +25,6 @@ export class RolesGuard implements CanActivate {
     const userId = this.jwtService.verify(token, {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
     });
-
-    // console.log(request.user, 'request');
 
     const user = await this.usersService.findOne(userId.id);
 
