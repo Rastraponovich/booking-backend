@@ -44,7 +44,7 @@ export class AuthService {
     const payload = { email: user.email, id: user.id, roleId: user.roleId };
     return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn: '15m',
+      expiresIn: '30s',
       // expiresIn: `${this.configService.get(
       //   'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
       // )}s`,
@@ -72,8 +72,6 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string) {
-    console.log(refreshToken);
-
     const token = this.jwtService.verify(refreshToken, {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
     }) as { id: number };
@@ -87,6 +85,7 @@ export class AuthService {
 
   private async validateUser(userDto: CreateUserDto) {
     const user = await this.usersService.findByEmail(userDto.email);
+
     const passwordEqueals = await bcrypt.compare(
       userDto.password,
       user.password,

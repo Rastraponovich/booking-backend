@@ -13,7 +13,6 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor(
     private readonly configService: ConfigService,
-    // private readonly userService: UsersService,
     private readonly authService: AuthService,
   ) {
     super({
@@ -29,6 +28,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 
   async validate(request: Request, payload: { id: number }) {
     const refreshToken = request.cookies?.refreshToken;
+
     return this.authService.refreshToken(refreshToken);
   }
 }

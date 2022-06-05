@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: false }),
-    { cors: true },
+    { cors: { origin: 'http://localhost:3000', credentials: true } },
   );
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
