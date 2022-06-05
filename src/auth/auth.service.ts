@@ -37,17 +37,16 @@ export class AuthService {
       password,
     });
 
-    return this.generateAccessToken(user);
+    return this.generateTokens(user);
   }
 
   private async generateAccessToken(user: User) {
     const payload = { email: user.email, id: user.id, roleId: user.roleId };
     return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn: '30s',
-      // expiresIn: `${this.configService.get(
-      //   'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      // )}s`,
+      expiresIn:
+        Number(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')) *
+        1000,
     });
   }
 
@@ -55,10 +54,9 @@ export class AuthService {
     const payload = { id: user.id };
     return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
-      expiresIn: '60d',
-      // expiresIn: `${this.configService.get(
-      //   'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-      // )}s`,
+      expiresIn:
+        Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+        1000,
     });
   }
   private async generateTokens(user: User) {
@@ -72,9 +70,10 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string) {
-    const token = this.jwtService.verify(refreshToken, {
-      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
-    }) as { id: number };
+    const token = this.jwtService.verify(
+      refreshToken,
+      this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+    ) as { id: number };
 
     if (token) {
       const user = await this.usersService.findOne(Number(token.id));

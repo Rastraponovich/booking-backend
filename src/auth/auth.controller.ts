@@ -30,7 +30,7 @@ export class AuthController {
   async login(
     @Body() user: CreateUserDto,
     @Res({ passthrough: true }) res: any,
-    @Cookies('refreshToken') refreshToken: string,
+    @Req() req: Request,
   ) {
     const tokens = await this.authService.login(user);
 
@@ -43,11 +43,14 @@ export class AuthController {
       path: '/',
     });
 
-    return { accessToken: tokens.accessToken };
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
   }
 
-  @Post('logout')
   @UseGuards(JwtAuthGuard)
+  @Post('logout')
   async logout(
     @Res({ passthrough: true }) res: any,
     @Cookies('refreshToken') refreshToken: string,
@@ -64,24 +67,37 @@ export class AuthController {
   }
 
   @Post('registration')
-  async registration(@Body() createUserDto: CreateUserDto) {
-    return this.authService.registration(createUserDto);
+  async registration(
+    @Body() createUserDto: CreateUserDto,
+    @Res({ passthrough: true }) res: any,
+  ) {
+    const { accessToken, refreshToken } = await this.authService.registration(
+      createUserDto,
+    );
+
+    res.setCookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 60,
+      // Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+      // 1000,
+      path: '/',
+    });
+
+    return {
+      accessToken,
+    };
   }
 
-  @Get('refresh')
   @UseGuards(JwtRefreshGuard)
-  @UseGuards(RolesGuard)
+  @Get('refresh')
+  // @UseGuards(RolesGuard)
   // @Roles()
   async refresh(
     @Req()
-    req: Request & {
-      user: Express.User & { refreshToken: string; accessToken: string };
-    },
+    req: Request & { user: { refreshToken: string; accessToken: string } },
     @Res({ passthrough: true }) res: any,
   ) {
     const { refreshToken, accessToken } = req.user;
-
-    console.log(req.user, 'req.user');
 
     res.setCookie('refreshToken', refreshToken, {
       httpOnly: true,
