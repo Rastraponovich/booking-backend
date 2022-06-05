@@ -30,7 +30,7 @@ export class AuthController {
   async login(
     @Body() user: CreateUserDto,
     @Res({ passthrough: true }) res: any,
-    @Cookies('refreshToken') refreshToken: string,
+    @Req() req: Request,
   ) {
     const tokens = await this.authService.login(user);
 
@@ -43,11 +43,14 @@ export class AuthController {
       path: '/',
     });
 
-    return { accessToken: tokens.accessToken };
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
   }
 
-  @Post('logout')
   @UseGuards(JwtAuthGuard)
+  @Post('logout')
   async logout(
     @Res({ passthrough: true }) res: any,
     @Cookies('refreshToken') refreshToken: string,
@@ -68,20 +71,16 @@ export class AuthController {
     return this.authService.registration(createUserDto);
   }
 
-  @Get('refresh')
   @UseGuards(JwtRefreshGuard)
-  @UseGuards(RolesGuard)
+  @Get('refresh')
+  // @UseGuards(RolesGuard)
   // @Roles()
   async refresh(
     @Req()
-    req: Request & {
-      user: Express.User & { refreshToken: string; accessToken: string };
-    },
+    req: Request & { user: { refreshToken: string; accessToken: string } },
     @Res({ passthrough: true }) res: any,
   ) {
     const { refreshToken, accessToken } = req.user;
-
-    console.log(req.user, 'req.user');
 
     res.setCookie('refreshToken', refreshToken, {
       httpOnly: true,

@@ -72,9 +72,10 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string) {
-    const token = this.jwtService.verify(refreshToken, {
-      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
-    }) as { id: number };
+    const token = this.jwtService.verify(
+      refreshToken,
+      this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+    ) as { id: number };
 
     if (token) {
       const user = await this.usersService.findOne(Number(token.id));
