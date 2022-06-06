@@ -67,8 +67,25 @@ export class AuthController {
   }
 
   @Post('registration')
-  async registration(@Body() createUserDto: CreateUserDto) {
-    return this.authService.registration(createUserDto);
+  async registration(
+    @Body() createUserDto: CreateUserDto,
+    @Res({ passthrough: true }) res: any,
+  ) {
+    const { accessToken, refreshToken } = await this.authService.registration(
+      createUserDto,
+    );
+
+    res.setCookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 60,
+      // Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+      // 1000,
+      path: '/',
+    });
+
+    return {
+      accessToken,
+    };
   }
 
   @UseGuards(JwtRefreshGuard)
