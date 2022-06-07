@@ -44,9 +44,7 @@ export class AuthService {
     const payload = { email: user.email, id: user.id, roleId: user.roleId };
     return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn:
-        Number(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')) *
-        1000,
+      expiresIn: '5m',
     });
   }
 
@@ -54,9 +52,7 @@ export class AuthService {
     const payload = { id: user.id };
     return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
-      expiresIn:
-        Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
-        1000,
+      expiresIn: '60d',
     });
   }
   private async generateTokens(user: User) {
